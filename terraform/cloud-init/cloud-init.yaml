@@ -1,0 +1,41 @@
+#cloud-config
+allow_public_ssh_keys: true
+users:
+  - name: devops
+    groups: [sudo]
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    homedir: /home/devops
+    system: false
+    ssh_authorized_keys:
+      - "${ssh_public_key}"
+  - name: ansible
+    gecos: Ansible User
+    groups: users,sys
+    sudo: "ALL=(ALL) NOPASSWD:ALL"
+    shell: /bin/bash
+    lock_passwd: true
+    ssh_authorized_keys:
+      - "${ssh_public_key}"
+ssh_pwauth: false
+timezone: America/Bogota
+packages:
+  - openssh-server
+  - curl
+  - python3-pip
+write_files:
+  - path: /etc/ssh/sshd_config
+    permissions: "0600"
+    content: |
+      Port 22
+      ListenAddress 0.0.0.0
+      PermitRootLogin no
+      PasswordAuthentication no
+      ChallengeResponseAuthentication no
+      UsePAM yes
+      X11Forwarding yes
+      PrintMotd no
+      Subsystem	sftp	/usr/lib/openssh/sftp-server
+
+
+

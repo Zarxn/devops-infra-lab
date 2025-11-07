@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     incus = {
-      source = "lxc/incus"
+      source  = "lxc/incus"
       version = "~> 1.0.0"
     }
   }
@@ -9,7 +9,7 @@ terraform {
 
 provider "incus" {
 
-     default_remote  = "local"
-     generate_client_certificates = true
+  default_remote               = "local"
+  generate_client_certificates = true
 
 }
