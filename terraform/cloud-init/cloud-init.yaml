@@ -36,6 +36,9 @@ write_files:
       X11Forwarding yes
       PrintMotd no
       Subsystem	sftp	/usr/lib/openssh/sftp-server
+runcmd:
+  - swapoff -a
+  - sed -i.bak '/ swap / s/^/#/' /etc/fstab
 
 
 
