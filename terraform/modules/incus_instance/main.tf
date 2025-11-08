@@ -3,6 +3,7 @@ resource "incus_instance" "main" {
   name     = each.value.name
   type = each.value.type
   image    = each.value.image
+  running = each.value.running
   config = merge(
     each.value.config,
     {

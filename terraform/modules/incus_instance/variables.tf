@@ -8,7 +8,9 @@ variable "instances" {
       name   = string
       type   = optional(string, "container")
       image  = optional(string, "images:ubuntu/jammy/cloud")
+      running = optional(bool, true)
       config = optional(map(any), {})
+      
   }))
 
   
