@@ -5,19 +5,19 @@ variable "instances" {
   type = map(object(
     {
 
-      name   = string
-      type   = optional(string, "container")
-      image  = optional(string, "images:ubuntu/jammy/cloud")
+      name    = string
+      type    = optional(string, "container")
+      image   = optional(string, "images:ubuntu/jammy/cloud")
       running = optional(bool, true)
-      config = optional(map(any), {})
+      config  = optional(map(any), {})
   }))
 }
 
 variable "ssh_public_key" {
 
   description = "Public Key to be injected within the instances"
-  type = string
-  sensitive = true
+  type        = string
+  sensitive   = true
 }
 
 # variable "storage_pools" {
