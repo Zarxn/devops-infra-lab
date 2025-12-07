@@ -10,6 +10,7 @@ repos:
       - id: terraform_validate
         name: Terraform Validate
         description: Validates all Terraform configuration files
+        exclude: 'terraform/live/.*'  # Exclude Terragrunt directories
 
       - id: terraform_docs
         name: Terraform Docs

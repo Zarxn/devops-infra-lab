@@ -4,9 +4,21 @@
 # Local .terraform directories
 .terraform/
 
-# .tfstate files
+# Terraform state files
 *.tfstate
 *.tfstate.*
+terraform.tfstate
+terraform.tfstate.backup
+
+# Terragrunt cache directories
+**/.terragrunt-cache/
+*.terraform.lock.hcl
+
+# Terragrunt generated backend files
+backend.tf
+
+# Local state directories
+**/.terraform-states/
 
 # Crash log files
 crash.log
@@ -50,3 +62,6 @@ terraform.rc
 
 *.ini
 *.ini.*
+
+#Infisical
+*.env
