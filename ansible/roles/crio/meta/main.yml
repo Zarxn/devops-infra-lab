@@ -1,0 +1,26 @@
+---
+galaxy_info:
+  author: DevOps Portfolio Project
+  description: Install and configure CRI-O container runtime for Kubernetes
+  license: MIT
+
+  min_ansible_version: "2.10"
+
+  platforms:
+    - name: Ubuntu
+      versions:
+        - jammy
+        - focal
+    - name: Debian
+      versions:
+        - bullseye
+        - bookworm
+
+  galaxy_tags:
+    - kubernetes
+    - crio
+    - container
+    - runtime
+    - cri
+
+dependencies: []

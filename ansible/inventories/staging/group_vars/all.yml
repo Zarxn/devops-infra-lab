@@ -1,0 +1,3 @@
+---
+# Variables for staging environment
+ansible_user: ansible

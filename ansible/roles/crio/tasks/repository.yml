@@ -1,0 +1,36 @@
+---
+# CRI-O repository configuration for Debian/Ubuntu
+# Uses official CRI-O packages from download.opensuse.org
+
+- name: Install required dependencies for repository setup
+  ansible.builtin.apt:
+    name: "{{ crio_dependencies }}"
+    state: present
+    update_cache: true
+
+- name: Create keyrings directory
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: "0755"
+
+- name: Download CRI-O GPG key
+  ansible.builtin.get_url:
+    url: "{{ crio_repo_base_url }}/{{ crio_version }}/deb/Release.key"
+    dest: /tmp/crio-release.key
+    mode: "0644"
+    force: true
+
+- name: Dearmor and install CRI-O GPG key
+  ansible.builtin.shell: |
+    gpg --batch --yes --dearmor -o /etc/apt/keyrings/cri-o-apt-keyring.gpg /tmp/crio-release.key
+  args:
+    creates: /etc/apt/keyrings/cri-o-apt-keyring.gpg
+  changed_when: true
+
+- name: Add CRI-O APT repository
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by=/etc/apt/keyrings/cri-o-apt-keyring.gpg] {{ crio_repo_base_url }}/{{ crio_version }}/deb/ /"
+    filename: cri-o
+    state: present
+    update_cache: true

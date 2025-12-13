@@ -1,0 +1,3 @@
+---
+# Variables for development environment
+ansible_user: ansible

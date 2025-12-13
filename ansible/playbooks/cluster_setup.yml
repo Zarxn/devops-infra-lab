@@ -1,0 +1,10 @@
+- hosts: all
+  become: true
+  vars:
+    kubernetes_allow_pods_on_control_plane: true
+    kubernetes_version: '1.34'
+    kubernetes_cri_socket: 'unix:///var/run/crio/crio.sock'
+    kubernetes_join_command_extra_opts: "--cri-socket unix:///var/run/crio/crio.sock"
+  roles:
+    - crio
+    - geerlingguy.kubernetes

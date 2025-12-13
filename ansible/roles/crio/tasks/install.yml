@@ -1,0 +1,30 @@
+---
+# CRI-O package installation and service configuration
+
+- name: Install CRI-O package
+  ansible.builtin.apt:
+    name: cri-o
+    state: present
+    update_cache: true
+
+- name: Enable and start CRI-O service
+  ansible.builtin.systemd:
+    name: crio
+    enabled: "{{ crio_service_enabled }}"
+    state: "{{ crio_service_state }}"
+    daemon_reload: true
+
+- name: Verify CRI-O is running
+  ansible.builtin.command: systemctl is-active crio
+  register: crio_status
+  changed_when: false
+  failed_when: crio_status.rc != 0
+
+- name: Display CRI-O version
+  ansible.builtin.command: crio --version
+  register: crio_version_output
+  changed_when: false
+
+- name: Show CRI-O version
+  ansible.builtin.debug:
+    msg: "{{ crio_version_output.stdout_lines }}"

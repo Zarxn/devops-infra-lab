@@ -1,0 +1,32 @@
+---
+# CRI-O version (should match Kubernetes minor version)
+# Available versions: v1.28, v1.29, v1.30, v1.31, v1.32, v1.33, v1.34, v1.35
+crio_version: "v1.34"
+
+# Enable CRI-O service on boot
+crio_service_enabled: true
+
+# Start CRI-O service after installation
+crio_service_state: started
+
+# Kernel modules required for container networking
+crio_kernel_modules:
+  - overlay
+  - br_netfilter
+
+# Sysctl settings for Kubernetes networking
+crio_sysctl_settings:
+  net.bridge.bridge-nf-call-iptables: 1
+  net.bridge.bridge-nf-call-ip6tables: 1
+  net.ipv4.ip_forward: 1
+
+# Dependencies to install before adding repository
+crio_dependencies:
+  - curl
+  - gnupg
+  - software-properties-common
+  - apt-transport-https
+  - ca-certificates
+
+# CRI-O repository base URL (note: trailing colon is required for OBS path format)
+crio_repo_base_url: "https://download.opensuse.org/repositories/isv:/cri-o:/stable:"

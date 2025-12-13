@@ -1,0 +1,41 @@
+---
+# Prerequisites for CRI-O installation
+# Configures kernel modules and sysctl settings required for container networking
+
+- name: Load required kernel modules
+  community.general.modprobe:
+    name: "{{ item }}"
+    state: present
+  loop: "{{ crio_kernel_modules }}"
+
+- name: Persist kernel modules across reboots
+  ansible.builtin.copy:
+    dest: /etc/modules-load.d/crio.conf
+    content: |
+      # Kernel modules required for CRI-O
+      {% for module in crio_kernel_modules %}
+      {{ module }}
+      {% endfor %}
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Configure sysctl settings for container networking
+  ansible.posix.sysctl:
+    name: "{{ item.key }}"
+    value: "{{ item.value }}"
+    sysctl_file: /etc/sysctl.d/99-crio.conf
+    reload: true
+    state: present
+  loop: "{{ crio_sysctl_settings | dict2items }}"
+
+- name: Disable swap (required for Kubernetes)
+  ansible.builtin.command: swapoff -a
+  changed_when: false
+
+- name: Disable swap permanently in fstab
+  ansible.builtin.replace:
+    path: /etc/fstab
+    regexp: '^([^#].*?\sswap\s+sw\s+.*)$'
+    replace: '# \1'
+  failed_when: false

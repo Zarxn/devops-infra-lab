@@ -1,0 +1,9 @@
+---
+# Debian/Ubuntu specific variables
+# These are automatically loaded based on ansible_os_family
+
+# Package manager
+crio_package_manager: apt
+
+# GPG keyring path
+crio_keyring_path: /etc/apt/keyrings/cri-o-apt-keyring.gpg

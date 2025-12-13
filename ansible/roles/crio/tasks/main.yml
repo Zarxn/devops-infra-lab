@@ -1,0 +1,25 @@
+---
+# Main entry point for CRI-O role
+# Installs CRI-O container runtime on Debian/Ubuntu systems
+
+- name: Include OS-specific variables
+  ansible.builtin.include_vars: "{{ ansible_os_family }}.yml"
+  failed_when: false
+
+- name: Configure system prerequisites
+  ansible.builtin.include_tasks: prerequisites.yml
+  tags:
+    - crio
+    - prerequisites
+
+- name: Configure CRI-O repository
+  ansible.builtin.include_tasks: repository.yml
+  tags:
+    - crio
+    - repository
+
+- name: Install and configure CRI-O
+  ansible.builtin.include_tasks: install.yml
+  tags:
+    - crio
+    - install
