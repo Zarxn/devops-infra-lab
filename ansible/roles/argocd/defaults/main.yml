@@ -1,0 +1,18 @@
+---
+# Defaults for ArgoCD role
+
+# Helm Chart details
+argocd_chart_name: argo-cd
+argocd_chart_version: "9.1.2" # Check for latest stable version
+argocd_helm_repo_name: argo
+argocd_helm_repo_url: https://argoproj.github.io/argo-helm
+
+# Kubernetes details
+argocd_namespace: argocd
+argocd_create_namespace: true
+
+# Helm values (can be overridden)
+argocd_values:
+  server:
+    service:
+      type: NodePort # Or LoadBalancer if available, or ClusterIP with Ingress

@@ -1,0 +1,38 @@
+---
+- name: Install Python dependencies for K8s module
+  command: >
+    {{ ansible_playbook_python }} -m pip install kubernetes jsonpatch PyYAML
+  delegate_to: localhost
+  run_once: true
+  changed_when: false # pip handles idempotency, but we suppress 'changed' to avoid noise, or we could parse output.
+
+- name: Add ArgoCD Helm repository
+  kubernetes.core.helm_repository:
+    name: "{{ argocd_helm_repo_name }}"
+    repo_url: "{{ argocd_helm_repo_url }}"
+  delegate_to: localhost
+  run_once: true
+
+- name: Ensure ArgoCD namespace exists
+  kubernetes.core.k8s:
+    name: "{{ argocd_namespace }}"
+    api_version: v1
+    kind: Namespace
+    state: present
+    kubeconfig: "{{ kubeconfig_path }}"
+  delegate_to: localhost
+  run_once: true
+  when: argocd_create_namespace
+
+- name: Deploy ArgoCD using Helm
+  kubernetes.core.helm:
+    name: argocd
+    chart_ref: "{{ argocd_helm_repo_name }}/{{ argocd_chart_name }}"
+    release_namespace: "{{ argocd_namespace }}"
+    chart_version: "{{ argocd_chart_version }}"
+    values: "{{ argocd_values }}"
+    update_repo_cache: true
+    wait: true
+    kubeconfig: "{{ kubeconfig_path }}"
+  delegate_to: localhost
+  run_once: true

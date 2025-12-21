@@ -1,0 +1,11 @@
+---
+# Playbook to install ArgoCD on Kubernetes nodes
+# Usage: ansible-playbook -i inventories/<env>/hosts.yml playbooks/setup_argo.yml
+
+- name: Install ArgoCD
+  hosts: localhost
+  gather_facts: true
+  vars:
+    kubeconfig_path: "{{ ansible_user_dir }}/.kube/config"
+  roles:
+    - role: argocd
