@@ -7,7 +7,6 @@ Este documento describe el proceso completo para configurar Infisical y sus secr
 ### 1. Instalar Infisical en el Bastion
 
 ```bash
-cd /home/vagrant/infra
 ./scripts/setup-infisical-bastion.sh
 ```
 
@@ -16,7 +15,6 @@ Esto instalará Infisical en Docker y estará disponible en `http://localhost:80
 ### 2. Instalar el CLI de Infisical
 
 ```bash
-cd /home/vagrant/infra
 ./scripts/install-infisical-cli.sh
 ```
 
@@ -75,7 +73,7 @@ Por defecto, Infisical crea los ambientes "dev", "staging" y "prod". Si necesita
 
 ```bash
 # SSH Public Key
-cat /home/vagrant/.ssh/id_rsa.pub
+cat ~/.ssh/id_rsa.pub
 ```
 
 4. Copiar el valor completo
@@ -245,7 +243,7 @@ infisical secrets get SSH_PUBLIC_KEY \
 ### 3. Probar con Terragrunt
 
 ```bash
-cd /home/vagrant/infra/terraform/live/dev/k8s-cluster
+cd terraform/live/dev/k8s-cluster
 
 # Esto debería funcionar sin errores si todo está configurado
 terragrunt plan
@@ -256,7 +254,7 @@ terragrunt plan
 Si las variables de entorno NO están configuradas, Terragrunt usará el archivo local como fallback:
 
 ```hcl
-ssh_public_key = local.infisical_token != "" ? run_cmd(...) : file("/home/vagrant/.ssh/id_rsa.pub")
+ssh_public_key = local.infisical_token != "" ? run_cmd(...) : file("~/.ssh/id_rsa.pub")
 ```
 
 Esto permite:

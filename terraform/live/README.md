@@ -156,7 +156,7 @@ terragrunt output
 #### Dev - K8s Cluster
 
 ```bash
-cd /home/vagrant/infra/terraform/live/dev/k8s-cluster
+cd terraform/live/dev/k8s-cluster
 
 # Ver el plan
 terragrunt plan
@@ -171,7 +171,7 @@ terragrunt output
 #### Staging - K8s Cluster
 
 ```bash
-cd /home/vagrant/infra/terraform/live/staging/k8s-cluster
+cd terraform/live/staging/k8s-cluster
 
 terragrunt plan
 terragrunt apply
@@ -181,12 +181,12 @@ terragrunt apply
 
 ```bash
 # Desplegar TODOS los componentes de dev
-cd /home/vagrant/infra/terraform/live/dev
+cd terraform/live/dev
 terragrunt run --all plan
 terragrunt run --all apply
 
 # Desplegar TODOS los componentes de staging
-cd /home/vagrant/infra/terraform/live/staging
+cd terraform/live/staging
 terragrunt run --all plan
 terragrunt run --all apply
 ```
@@ -206,11 +206,11 @@ incus list | grep staging-k8s
 
 ```bash
 # Destruir un componente específico
-cd /home/vagrant/infra/terraform/live/dev/k8s-cluster
+cd terraform/live/dev/k8s-cluster
 terragrunt destroy
 
 # Destruir TODO un ambiente
-cd /home/vagrant/infra/terraform/live/dev
+cd terraform/live/dev
 terragrunt run --all destroy
 ```
 
@@ -231,7 +231,7 @@ terraform/live/staging/k8s-cluster/terraform.tfstate
 ### Ver State de un Componente
 
 ```bash
-cd /home/vagrant/infra/terraform/live/dev/k8s-cluster
+cd terraform/live/dev/k8s-cluster
 
 # Listar recursos en el state
 terragrunt state list
@@ -263,7 +263,7 @@ ls -la ~/.ssh/id_rsa.pub
 ssh-keygen -t rsa -b 4096 -C "email@example.com"
 
 # O actualizar la ruta en terraform/live/dev/k8s-cluster/terragrunt.hcl
-# Buscar la línea: ssh_public_key = file("/home/vagrant/.ssh/id_rsa.pub")
+# Buscar la línea: ssh_public_key = file("~/.ssh/id_rsa.pub")
 ```
 
 ### Error: "Module not found"
@@ -279,7 +279,7 @@ pwd
 terragrunt init
 
 # Verificar que el módulo existe
-ls -la /home/vagrant/infra/terraform/modules/incus_instance/
+ls -la terraform/modules/incus_instance/
 ```
 
 ### Error: "Backend configuration changed"
@@ -289,7 +289,7 @@ ls -la /home/vagrant/infra/terraform/modules/incus_instance/
 **Solución**:
 ```bash
 # Limpiar cache y re-inicializar
-cd /home/vagrant/infra/terraform/live/dev/k8s-cluster
+cd terraform/live/dev/k8s-cluster
 rm -rf .terragrunt-cache
 terragrunt init -reconfigure
 
@@ -315,11 +315,11 @@ Si se experimentan problemas, se puede limpiar el cache:
 
 ```bash
 # Limpiar cache de un componente
-cd /home/vagrant/infra/terraform/live/dev/k8s-cluster
+cd terraform/live/dev/k8s-cluster
 rm -rf .terragrunt-cache
 
 # Limpiar TODOS los caches
-find /home/vagrant/infra/terraform/live -type d -name ".terragrunt-cache" -exec rm -rf {} +
+find terraform/live -type d -name ".terragrunt-cache" -exec rm -rf {} +
 ```
 
 ## Configuración por Ambiente
@@ -358,7 +358,7 @@ locals {
 Luego aplicar los cambios:
 
 ```bash
-cd /home/vagrant/infra/terraform/live/dev/k8s-cluster
+cd terraform/live/dev/k8s-cluster
 terragrunt apply
 ```
 
@@ -392,7 +392,7 @@ Usar los outputs de Terragrunt para generar dinámicamente el inventario de Ansi
 
 ```bash
 # Generar lista de IPs
-cd /home/vagrant/infra/terraform/live/dev/k8s-cluster
+cd terraform/live/dev/k8s-cluster
 terragrunt output -json instance_ips > /tmp/dev-ips.json
 ```
 
@@ -401,7 +401,7 @@ terragrunt output -json instance_ips > /tmp/dev-ips.json
 Cuando se requiera, crear la estructura para producción:
 
 ```bash
-mkdir -p /home/vagrant/infra/terraform/live/prod/{k8s-cluster,storage}
+mkdir -p terraform/live/prod/{k8s-cluster,storage}
 # Copiar estructura de staging y ajustar recursos
 ```
 
