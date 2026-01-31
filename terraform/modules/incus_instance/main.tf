@@ -1,9 +1,11 @@
 resource "incus_instance" "main" {
   for_each = var.instances
-  name     = each.value.name
-  type = each.value.type
-  image    = each.value.image
+
+  name    = each.value.name
+  type    = each.value.type
+  image   = each.value.image
   running = each.value.running
+
   config = merge(
     each.value.config,
     {
