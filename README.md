@@ -4,7 +4,7 @@ Proyecto de laboratorio para desplegar un cluster Kubernetes bare-metal usando I
 
 ## Stack
 
-- **Infraestructura**: Terraform + Terragrunt (multi-ambiente)
+- **Infraestructura**: Terraform (multi-ambiente)
 - **Virtualización**: Incus/LXC (contenedores tipo VM)
 - **Configuración**: Ansible (CRI-O, Kubernetes, ArgoCD)
 - **Secretos**: Infisical (self-hosted)
@@ -14,53 +14,61 @@ Proyecto de laboratorio para desplegar un cluster Kubernetes bare-metal usando I
 ```
 .
 ├── terraform/
+│   ├── environments/     # Root modules por ambiente
+│   │   ├── dev/
+│   │   └── staging/
 │   ├── modules/          # Módulos reutilizables
 │   │   ├── incus_instance/
+│   │   ├── infisical/
 │   │   └── storage_pool/
-│   └── live/             # Configuraciones por ambiente (Terragrunt)
-│       ├── dev/
-│       └── staging/
+│   └── cloud-init/       # Templates cloud-init
 ├── ansible/
-│   ├── roles/            # Roles de configuración
+│   ├── roles/
 │   │   ├── argocd/
 │   │   ├── crio/
 │   │   └── geerlingguy.kubernetes/
 │   ├── playbooks/
 │   └── inventories/
-├── scripts/              # Scripts de instalación
-└── docs/                 # Documentación adicional
+├── scripts/
+└── docs/
 ```
 
 ## Requisitos
 
-- Terraform >= 1.13
-- Terragrunt >= 0.93
+- Terraform >= 1.10
 - Incus daemon + QEMU
 - Ansible >= 2.10
 
-## Uso Rápido
+## Uso
 
 ```bash
+# Variables de entorno para Infisical
+export TF_VAR_infisical_client_id="<client-id>"
+export TF_VAR_infisical_client_secret="<client-secret>"
+
 # Desplegar cluster dev
-cd terraform/live/dev/k8s-cluster
-terragrunt apply
+cd terraform/environments/dev
+terraform init
+terraform apply
+
+# Desplegar cluster staging
+cd terraform/environments/staging
+terraform init
+terraform apply
 
 # Configurar nodos con Ansible
 cd ansible
 ansible-playbook -i inventories/dev playbooks/setup-k8s.yml
 ```
 
-## Documentación
+## Módulos
 
-- [Terragrunt Multi-Ambiente](terraform/live/README.md)
-- [Gestión de Secretos](docs/INFISICAL_SETUP.md)
+| Módulo | Descripción |
+|--------|-------------|
+| [incus_instance](terraform/modules/incus_instance/) | Gestión de instancias Incus (VMs/contenedores) |
+| [infisical](terraform/modules/infisical/) | Obtención de secretos desde Infisical |
 
 ## Herramientas de Desarrollo
-
-El proyecto incluye pre-commit hooks para:
-- Linting (tflint, ansible-lint)
-- Seguridad (checkov)
-- Documentación automática (terraform-docs)
 
 ```bash
 # Instalar herramientas

@@ -1,40 +1,37 @@
 # Incus Instance Module
 
-This module manages Incus instances (containers or virtual machines) with cloud-init configuration.
+Módulo para gestionar instancias Incus (contenedores o VMs) con cloud-init.
 
-<!-- BEGIN_TF_DOCS -->
+## Uso
 
+```hcl
+module "incus_instance" {
+  source = "../../modules/incus_instance"
 
-## Requirements
+  instances = {
+    "my-vm" = {
+      name    = "my-vm"
+      type    = "virtual-machine"
+      image   = "images:ubuntu/jammy/cloud"
+      running = true
+      config = {
+        "limits.memory" = "2GiB"
+        "limits.cpu"    = "2"
+      }
+    }
+  }
 
-| Name | Version |
-|------|---------|
-| <a name="requirement_incus"></a> [incus](#requirement\_incus) | ~> 1.0.0 |
+  cloud_init_user_data = file("cloud-init.yaml")
+}
+```
 
-## Providers
+## Variables
 
-| Name | Version |
-|------|---------|
-| <a name="provider_incus"></a> [incus](#provider\_incus) | ~> 1.0.0 |
+| Variable | Tipo | Descripción |
+|----------|------|-------------|
+| `instances` | `map(object)` | Configuración de instancias |
+| `cloud_init_user_data` | `string` | Contenido cloud-init |
 
-## Modules
+## Recursos creados
 
-No modules.
-
-## Resources
-
-| Name | Type |
-|------|------|
-| [incus_instance.main](https://registry.terraform.io/providers/lxc/incus/latest/docs/resources/instance) | resource |
-
-## Inputs
-
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| <a name="input_cloud_init_user_data"></a> [cloud\_init\_user\_data](#input\_cloud\_init\_user\_data) | Raw cloud-init user-data content | `string` | n/a | yes |
-| <a name="input_instances"></a> [instances](#input\_instances) | Configuration fot the incus instances to be deployed | <pre>map(object(<br>    {<br><br>      name    = string<br>      type    = optional(string, "container")<br>      image   = optional(string, "images:ubuntu/jammy/cloud")<br>      running = optional(bool, true)<br>      config  = optional(map(any), {})<br><br>  }))</pre> | n/a | yes |
-
-## Outputs
-
-No outputs.
-<!-- END_TF_DOCS -->
+- `incus_instance.main` - Instancias Incus
