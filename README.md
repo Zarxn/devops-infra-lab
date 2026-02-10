@@ -8,6 +8,7 @@ Proyecto de laboratorio para desplegar un cluster Kubernetes bare-metal usando I
 - **Virtualización**: Incus/LXC (contenedores tipo VM)
 - **Configuración**: Ansible (CRI-O, Kubernetes, ArgoCD)
 - **Secretos**: Infisical (self-hosted)
+- **Monitoreo**: Prometheus + Grafana (kube-prometheus-stack)
 
 ## Estructura
 
@@ -26,6 +27,7 @@ Proyecto de laboratorio para desplegar un cluster Kubernetes bare-metal usando I
 │   ├── roles/
 │   │   ├── argocd/
 │   │   ├── crio/
+│   │   ├── monitoring/
 │   │   └── geerlingguy.kubernetes/
 │   ├── playbooks/
 │   └── inventories/
@@ -36,6 +38,7 @@ Proyecto de laboratorio para desplegar un cluster Kubernetes bare-metal usando I
 ## Requisitos
 
 - Terraform >= 1.10
+- Helm 3.x
 - Incus daemon + QEMU
 - Ansible >= 2.10
 
@@ -59,7 +62,17 @@ terraform apply
 # Configurar nodos con Ansible
 cd ansible
 ansible-playbook -i inventories/dev playbooks/setup-k8s.yml
+
+# Desplegar monitoreo (Prometheus + Grafana)
+ansible-playbook -i inventories/development/hosts.yml playbooks/setup_monitoring.yml
 ```
+
+## Monitoreo
+
+El stack de monitoreo se despliega con el role `monitoring` (kube-prometheus-stack). Una vez desplegado:
+
+- **Grafana**: `http://<worker-node-ip>:30300`
+- **Prometheus**: `kubectl port-forward -n monitoring svc/kube-prometheus-stack-prometheus 9090:9090`
 
 ## Módulos
 

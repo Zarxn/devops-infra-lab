@@ -1,0 +1,35 @@
+---
+# Defaults for Monitoring role (kube-prometheus-stack)
+
+# Helm Chart details
+monitoring_chart_name: kube-prometheus-stack
+monitoring_chart_version: "72.6.2"
+monitoring_helm_repo_name: prometheus-community
+monitoring_helm_repo_url: https://prometheus-community.github.io/helm-charts
+
+# Kubernetes details
+monitoring_namespace: monitoring
+monitoring_create_namespace: true
+
+# Helm values (can be overridden)
+monitoring_values:
+  prometheus:
+    prometheusSpec:
+      retention: 7d
+      resources:
+        requests:
+          cpu: 200m
+          memory: 200Mi
+        limits:
+          memory: 512Mi
+  grafana:
+    service:
+      type: NodePort
+      nodePort: 30300
+    adminPassword: admin
+  alertmanager:
+    enabled: false
+  nodeExporter:
+    enabled: true
+  kubeStateMetrics:
+    enabled: true

@@ -1,0 +1,13 @@
+---
+galaxy_info:
+  role_name: monitoring
+  author: DevOps Lab
+  description: Deploy kube-prometheus-stack on Kubernetes using Helm
+  license: MIT
+  min_ansible_version: "2.10"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - jammy
+
+dependencies: []
