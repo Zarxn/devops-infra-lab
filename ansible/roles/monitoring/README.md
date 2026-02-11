@@ -34,3 +34,4 @@ See `defaults/main.yml` for the full list of variables.
 
 - **Grafana**: `http://<worker-node-ip>:30300` (default credentials: `admin`/`admin`)
 - **Prometheus**: `kubectl port-forward -n monitoring svc/kube-prometheus-stack-prometheus 9090:9090`
+- **Alertmanager**: `kubectl port-forward -n monitoring svc/kube-prometheus-stack-alertmanager 9093:9093`

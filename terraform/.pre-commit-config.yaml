@@ -51,6 +51,7 @@ repos:
 
       - id: check-yaml
         name: Check YAML
+        args: ['--unsafe']
 
       - id: check-added-large-files
         name: Check for Large Files

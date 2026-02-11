@@ -28,8 +28,66 @@ monitoring_values:
       nodePort: 30300
     adminPassword: admin
   alertmanager:
-    enabled: false
+    enabled: true
+    alertmanagerSpec:
+      resources:
+        requests:
+          cpu: 50m
+          memory: 64Mi
+        limits:
+          memory: 128Mi
   nodeExporter:
     enabled: true
   kubeStateMetrics:
     enabled: true
+  additionalPrometheusRulesMap:
+    lab-alerts:
+      groups:
+        - name: node-alerts
+          rules:
+            - alert: NodeNotReady
+              expr: kube_node_status_condition{condition="Ready",status="true"} == 0
+              for: 2m
+              labels:
+                severity: critical
+              annotations:
+                summary: !unsafe "Node {{ $labels.node }} is not Ready"
+            - alert: HighMemoryUsage
+              expr: (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100 > 85
+              for: 5m
+              labels:
+                severity: warning
+              annotations:
+                summary: !unsafe "Node {{ $labels.instance }} memory usage above 85%"
+                description: !unsafe "Current usage: {{ $value | printf \"%.1f\" }}%"
+            - alert: HighDiskUsage
+              expr: (1 - node_filesystem_avail_bytes{fstype!="tmpfs"} / node_filesystem_size_bytes) * 100 > 80
+              for: 5m
+              labels:
+                severity: warning
+              annotations:
+                summary: !unsafe "Disk usage above 80% on {{ $labels.instance }}"
+                description: !unsafe "Mount {{ $labels.mountpoint }}: {{ $value | printf \"%.1f\" }}%"
+        - name: pod-alerts
+          rules:
+            - alert: PodCrashLooping
+              expr: rate(kube_pod_container_status_restarts_total[15m]) * 60 * 5 > 0
+              for: 5m
+              labels:
+                severity: critical
+              annotations:
+                summary: !unsafe "Pod {{ $labels.namespace }}/{{ $labels.pod }} is crash looping"
+            - alert: PodNotReady
+              expr: kube_pod_status_ready{condition="true"} == 0 and on(pod, namespace) kube_pod_status_phase{phase="Running"} == 1
+              for: 5m
+              labels:
+                severity: warning
+              annotations:
+                summary: !unsafe "Pod {{ $labels.namespace }}/{{ $labels.pod }} not ready for >5min"
+            - alert: KubeDeploymentReplicasMismatch
+              expr: kube_deployment_spec_replicas != kube_deployment_status_available_replicas
+              for: 5m
+              labels:
+                severity: warning
+              annotations:
+                summary: !unsafe "Deployment {{ $labels.namespace }}/{{ $labels.deployment }} has replica mismatch"
