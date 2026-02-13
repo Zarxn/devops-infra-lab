@@ -1,0 +1,123 @@
+#SPDX-License-Identifier: MIT-0
+---
+# defaults file for logging
+
+# Loki
+
+logging_loki_chart_name: loki          # nombre del chart en el repo
+logging_loki_chart_version: "6.51.0"      # versión del chart
+logging_loki_helm_repo_name: grafana   # nombre local del repo de Helm
+logging_loki_helm_repo_url: https://grafana.github.io/helm-charts  # URL del repo
+
+logging_loki_values:
+  deploymentMode: SingleBinary         # todo en un pod
+  singleBinary:
+    replicas: 1
+    resources:
+      requests:
+        cpu: 100m
+        memory: 128Mi
+      limits:
+        memory: 256Mi
+  loki:
+    auth_enabled: false                # sin multi-tenancy
+    commonConfig:
+      replication_factor: 1            # sin replicación
+    storage:
+      type: filesystem                 # almacenamiento local
+    schemaConfig:
+      configs:
+        - from: "2024-01-01"
+          store: tsdb
+          object_store: filesystem
+          schema: v13
+          index:
+            prefix: loki_index_
+            period: 24h
+  chunksCache:
+    enabled: false
+  resultsCache:
+    enabled: false
+  minio:
+    enabled: false
+# Deshabilitar componentes innecesesarios
+  read:
+    replicas: 0
+  write:
+    replicas: 0
+  backend:
+    replicas: 0
+  gateway:
+    enabled: false
+  ingester:
+    replicas: 0
+  querier:
+    replicas: 0
+  queryFrontend:
+    replicas: 0
+  queryScheduler:
+    replicas: 0
+  distributor:
+    replicas: 0
+  compactor:
+    replicas: 0
+  indexGateway:
+    replicas: 0
+  bloomCompactor:
+    replicas: 0
+  bloomGateway:
+    replicas: 0
+
+
+
+
+
+
+# Alloy
+logging_alloy_chart_name: alloy
+logging_alloy_chart_version: "1.6.0"
+logging_alloy_values:
+  controller:
+    type: daemonset                          # un pod por nodo
+  alloy:
+    configMap:
+      content: |
+        # Descubrir pods en Kubernetes
+        discovery.kubernetes "pods" {
+          role = "pod"
+        }
+
+        # Relabeling: construir los labels para Loki
+        discovery.relabel "pods" {
+          targets = discovery.kubernetes.pods.targets
+
+          rule {
+            source_labels = ["__meta_kubernetes_namespace"]
+            target_label  = "namespace"
+          }
+          rule {
+            source_labels = ["__meta_kubernetes_pod_name"]
+            target_label  = "pod"
+          }
+          rule {
+            source_labels = ["__meta_kubernetes_pod_container_name"]
+            target_label  = "container"
+          }
+        }
+
+        # Leer los logs de los pods descubiertos
+        loki.source.kubernetes "pods" {
+          targets    = discovery.relabel.pods.output
+          forward_to = [loki.write.local.receiver]
+        }
+
+        # Enviar logs a Loki
+        loki.write "local" {
+          endpoint {
+            url = "http://loki.monitoring.svc.cluster.local:3100/loki/api/v1/push"
+          }
+        }
+
+# Kubernetes
+logging_namespace: monitoring
+logging_create_namespace: false
