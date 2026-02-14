@@ -1,0 +1,11 @@
+- name: Install Python dependencies
+  command: >
+    {{ ansible_playbook_python }} -m pip install kubernetes jsonpatch PyYAML
+  changed_when: false
+- name: Create logging namespace
+  kubernetes.core.k8s:
+    name: "{{ logging_namespace }}"
+    api_version: v1
+    kind: Namespace
+    state: present
+    kubeconfig: "{{ kubeconfig_path }}"

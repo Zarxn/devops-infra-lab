@@ -1,0 +1,26 @@
+- name: Add grafana chart repo
+  kubernetes.core.helm_repository:
+    name: "{{ logging_repo_name }}"
+    repo_url: "{{ logging_repo_url }}"
+- name: Deploy Alloy Chart
+  kubernetes.core.helm:
+    name: alloy
+    chart_ref: "{{ logging_repo_name }}/{{ logging_alloy_chart_name }}"
+    chart_version: "{{ logging_alloy_chart_version }}"
+    values: "{{ logging_alloy_values }}"
+    release_namespace: "{{ logging_namespace }}"
+    wait: true
+    update_repo_cache: true
+    timeout: "10m0s"
+    kubeconfig: "{{ kubeconfig_path}}"
+- name: Deploy Loki Chart
+  kubernetes.core.helm:
+    name: loki
+    chart_ref: "{{ logging_repo_name }}/{{ logging_loki_chart_name }}"
+    chart_version: "{{ logging_loki_chart_version }}"
+    values: "{{ logging_loki_values }}"
+    release_namespace: "{{ logging_namespace }}"
+    wait: true
+    update_repo_cache: true
+    timeout: "10m0s"
+    kubeconfig: "{{ kubeconfig_path}}"

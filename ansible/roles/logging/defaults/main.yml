@@ -6,8 +6,8 @@
 
 logging_loki_chart_name: loki          # nombre del chart en el repo
 logging_loki_chart_version: "6.51.0"      # versión del chart
-logging_loki_helm_repo_name: grafana   # nombre local del repo de Helm
-logging_loki_helm_repo_url: https://grafana.github.io/helm-charts  # URL del repo
+logging_repo_name: grafana   # nombre local del repo de Helm
+logging_repo_url: https://grafana.github.io/helm-charts  # URL del repo
 
 logging_loki_values:
   deploymentMode: SingleBinary         # todo en un pod
@@ -69,13 +69,9 @@ logging_loki_values:
     replicas: 0
 
 
-
-
-
-
 # Alloy
 logging_alloy_chart_name: alloy
-logging_alloy_chart_version: "1.6.0"
+logging_alloy_chart_version: "latest"
 logging_alloy_values:
   controller:
     type: daemonset                          # un pod por nodo
@@ -121,3 +117,4 @@ logging_alloy_values:
 # Kubernetes
 logging_namespace: monitoring
 logging_create_namespace: false
+kubeconfig_path: "~/.kube/config"
