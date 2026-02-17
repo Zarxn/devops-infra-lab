@@ -13,6 +13,14 @@ logging_loki_values:
   deploymentMode: SingleBinary         # todo en un pod
   singleBinary:
     replicas: 1
+    persistence:
+      enabled: false
+    extraVolumes:
+      - name: data
+        emptyDir: {}
+    extraVolumeMounts:
+      - name: data
+        mountPath: /var/loki
     resources:
       requests:
         cpu: 100m
@@ -71,19 +79,19 @@ logging_loki_values:
 
 # Alloy
 logging_alloy_chart_name: alloy
-logging_alloy_chart_version: "latest"
+logging_alloy_chart_version: "1.6.0"
 logging_alloy_values:
   controller:
     type: daemonset                          # un pod por nodo
   alloy:
     configMap:
       content: |
-        # Descubrir pods en Kubernetes
+        // Descubrir pods en Kubernetes
         discovery.kubernetes "pods" {
           role = "pod"
         }
 
-        # Relabeling: construir los labels para Loki
+        // Relabeling: construir los labels para Loki
         discovery.relabel "pods" {
           targets = discovery.kubernetes.pods.targets
 
@@ -101,13 +109,13 @@ logging_alloy_values:
           }
         }
 
-        # Leer los logs de los pods descubiertos
+        // Leer los logs de los pods descubiertos
         loki.source.kubernetes "pods" {
           targets    = discovery.relabel.pods.output
           forward_to = [loki.write.local.receiver]
         }
 
-        # Enviar logs a Loki
+        // Enviar logs a Loki
         loki.write "local" {
           endpoint {
             url = "http://loki.monitoring.svc.cluster.local:3100/loki/api/v1/push"

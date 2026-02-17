@@ -27,6 +27,12 @@ monitoring_values:
       type: NodePort
       nodePort: 30300
     adminPassword: admin
+    additionalDataSources:
+      - name: Loki
+        type: loki
+        url: http://loki.monitoring.svc.cluster.local:3100
+        access: proxy
+        isDefault: false
   alertmanager:
     enabled: true
     alertmanagerSpec:
