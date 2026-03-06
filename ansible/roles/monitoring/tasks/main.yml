@@ -1,0 +1,39 @@
+---
+- name: Install Python dependencies for K8s module
+  command: >
+    {{ ansible_playbook_python }} -m pip install kubernetes jsonpatch PyYAML
+  delegate_to: localhost
+  run_once: true
+  changed_when: false
+
+- name: Add Prometheus Community Helm repository
+  kubernetes.core.helm_repository:
+    name: "{{ monitoring_helm_repo_name }}"
+    repo_url: "{{ monitoring_helm_repo_url }}"
+  delegate_to: localhost
+  run_once: true
+
+- name: Ensure monitoring namespace exists
+  kubernetes.core.k8s:
+    name: "{{ monitoring_namespace }}"
+    api_version: v1
+    kind: Namespace
+    state: present
+    kubeconfig: "{{ kubeconfig_path }}"
+  delegate_to: localhost
+  run_once: true
+  when: monitoring_create_namespace
+
+- name: Deploy kube-prometheus-stack using Helm
+  kubernetes.core.helm:
+    name: kube-prometheus-stack
+    chart_ref: "{{ monitoring_helm_repo_name }}/{{ monitoring_chart_name }}"
+    release_namespace: "{{ monitoring_namespace }}"
+    chart_version: "{{ monitoring_chart_version }}"
+    values: "{{ monitoring_values }}"
+    update_repo_cache: true
+    wait: true
+    timeout: 10m0s
+    kubeconfig: "{{ kubeconfig_path }}"
+  delegate_to: localhost
+  run_once: true

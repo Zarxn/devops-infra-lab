@@ -1,0 +1,8 @@
+---
+- name: Deploy Monitoring Stack
+  hosts: localhost
+  gather_facts: true
+  vars:
+    kubeconfig_path: "{{ ansible_user_dir }}/.kube/config"
+  roles:
+    - role: monitoring

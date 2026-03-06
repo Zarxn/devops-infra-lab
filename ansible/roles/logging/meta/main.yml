@@ -1,0 +1,12 @@
+#SPDX-License-Identifier: MIT-0
+galaxy_info:
+  author: DevOps Lab
+  description: Deploy Alloy and Loki on Kubernetes using Helm
+  company: Home-lab
+  license: MIT
+  min_ansible_version: 2.1
+  platforms:
+    - name: Ubuntu
+      versions:
+        - jammy
+dependencies: []
