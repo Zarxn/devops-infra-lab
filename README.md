@@ -9,6 +9,7 @@ Proyecto de laboratorio para desplegar un cluster Kubernetes bare-metal usando I
 - **Configuración**: Ansible (CRI-O, Kubernetes, ArgoCD)
 - **Secretos**: Infisical (self-hosted)
 - **Monitoreo**: Prometheus + Grafana (kube-prometheus-stack)
+- **Logging**: Loki + Grafana Alloy
 
 ## Estructura
 
@@ -27,6 +28,7 @@ Proyecto de laboratorio para desplegar un cluster Kubernetes bare-metal usando I
 │   ├── roles/
 │   │   ├── argocd/
 │   │   ├── crio/
+│   │   ├── logging/
 │   │   ├── monitoring/
 │   │   └── geerlingguy.kubernetes/
 │   ├── playbooks/
@@ -65,14 +67,27 @@ ansible-playbook -i inventories/dev playbooks/setup-k8s.yml
 
 # Desplegar monitoreo (Prometheus + Grafana)
 ansible-playbook -i inventories/development/hosts.yml playbooks/setup_monitoring.yml
+
+# Desplegar logging (Loki + Alloy)
+ansible-playbook -i inventories/development/hosts.yml playbooks/setup_logging.yml
 ```
 
-## Monitoreo
+## Observabilidad
 
-El stack de monitoreo se despliega con el role `monitoring` (kube-prometheus-stack). Una vez desplegado:
+### Monitoreo (Prometheus + Grafana)
+
+El stack de monitoreo se despliega con el role `monitoring` (kube-prometheus-stack):
 
 - **Grafana**: `http://<worker-node-ip>:30300`
 - **Prometheus**: `kubectl port-forward -n monitoring svc/kube-prometheus-stack-prometheus 9090:9090`
+
+### Logging (Loki + Alloy)
+
+El stack de logging se despliega con el role `logging`:
+
+- **Loki**: SingleBinary mode, almacenamiento en filesystem (emptyDir)
+- **Alloy**: DaemonSet que recolecta logs via API de Kubernetes y los envía a Loki
+- **Acceso**: Datasource Loki disponible en Grafana → Explore → seleccionar "Loki"
 
 ## Módulos
 
